@@ -2,6 +2,7 @@
 import React from 'react';
 
 const Features = () => {
+  
   return (
     <section className="bg-white py-24">
       <div className="max-w-7xl mx-auto px-4">
