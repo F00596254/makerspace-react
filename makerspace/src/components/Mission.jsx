@@ -1,6 +1,5 @@
 // TestimonialsSection.js
-import React from 'react';
-
+ 
 const Mission = () => {
   return (
     <section className="bg-gray-100 py-24">
