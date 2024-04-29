@@ -1,10 +1,11 @@
 import Ticketbar from "../components/TicketBar";
  
 import TextFields from "../components/TextFields"
+import Button from "../components/Button";
 export default function Signup(){
     return <div >
          
-         <div className="font-bold text-5xl mt-52 ml-52">
+         <div className="font-bold text-5xl mt-20 ml-52">
          3D PRINTING REQUEST/HELP
        </div>
        <div className="text-2xl ml-52 mt-12 text-slate-600" >
@@ -29,6 +30,17 @@ export default function Signup(){
        <div className="ml-44">
        <TextFields label={"Repeat Password *"} placeholder={"Repeat Password here......"}></TextFields>
        </div>
+       <div className="flex ">
+       <div className="mt-6 ml-48 mb-20">
+        <Button label={"REGISTER"}></Button>
+       </div>
+       <div className="mt-6 mb-20 ml-4">
+        <Button label={"CANCEL"}></Button>
+       </div>
+       </div>
+    
+     
+       
     </div>
 }
-//broken code
+ 
