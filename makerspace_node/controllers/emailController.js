@@ -1,34 +1,26 @@
 const nodemailer = require('nodemailer');
 const Email = require('../models/email');
+const mailService = require('../service/mailService');
 
 const sendEmail = async (req, res) => {
-    const { to, from, subject, body, attachments } = req.body;
-
-    let attachmentArray = [];
-    if (attachments) {
-        attachmentArray = attachments.map(att => ({ filename: att.filename, path: att.path }));
-    }
-
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'chouderpallysravya@gmail.com',
-            pass: 'Fall@2023',
-        },
-    });
-
-    const mailOptions = {
-        from,
-        to,
-        subject,
-        text: body,
-        attachments: attachmentArray,
-    };
-
     try {
-        await transporter.sendMail(mailOptions);
-        const newEmail = new Email({ to, from, subject, body, attachments: attachmentArray });
+        const { to, from, subject, body } = req.body;
+
+
+        const mailOptions = {
+            from: from,
+            to: to,
+            subject: subject,
+            text: body
+        };
+
+    
+        await mailService.sendMail(mailOptions);
+
+        const newEmail = new Email({ to, from, subject, body });
         await newEmail.save();
+
+
         res.status(200).send('Email sent and saved successfully');
     } catch (error) {
         console.error(error);
