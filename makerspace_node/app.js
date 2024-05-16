@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db.js');
 const userRoutes = require('./routes/userRoutes.js');
+const emailRoutes = require('./routes/emailRoutes.js')
 
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/api', userRoutes);
+app.use('/mail', emailRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
