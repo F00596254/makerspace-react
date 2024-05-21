@@ -43,6 +43,5 @@ export default function Signin() {
                 <Button onClick={()=> LogginIn(email,password,setIsLoggedInS,navigate)}  label={"LOG IN"}></Button>
             </div>
         </div>
-            <div className="mb-44"></div>
     </div>
 }
