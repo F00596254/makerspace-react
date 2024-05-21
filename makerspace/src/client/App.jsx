@@ -6,12 +6,13 @@ import Signin from './pages/Signin';
 import NavigationBar from './components/NavigationBar'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
-import Footer from './components/Footer';
+import Footer from './components/Footer/Footer';
 import About from './pages/About';
 import Services from './pages/Services';
 import Contact from './pages/Contact';
 import { RecoilRoot } from 'recoil';
 import AccountDetails from './pages/AccountDetails';
+import Tickets from './pages/Tickets';
 
 function App() {
   return (
@@ -28,6 +29,8 @@ function App() {
           <Route path='/accountdetails' element={<AccountDetails/>}></Route>
           <Route path='/services' element={<Services/>}></Route>
           <Route path='/contact' element={<Contact/>}></Route>
+          <Route path='/tickets' element={<Tickets/>}></Route>
+        
         </Routes>
         <Footer />
           </RecoilRoot>
