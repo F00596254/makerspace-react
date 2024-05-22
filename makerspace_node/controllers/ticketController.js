@@ -38,4 +38,14 @@ const submitTicket = async (req, res) => {
   }
 };
 
-module.exports = { submitTicket, upload };
+
+const getAllTickets = async (req, res) => {
+    try {
+        const tickets = await Ticket.find();
+        res.status(200).json(tickets);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to retrieve tickets', error: error.message });
+    }
+    }
+
+module.exports = { submitTicket, upload, getAllTickets };
