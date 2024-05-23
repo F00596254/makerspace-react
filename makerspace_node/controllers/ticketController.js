@@ -4,13 +4,15 @@ const fs = require('fs');
 const Ticket = require('../models/tickets');
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '..', 'uploads'));
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
+    destination: (req, file, cb) => {
+      cb(null, path.join(__dirname, '..', 'uploads'));
+    },
+    filename: (req, file, cb) => {
+      const filename = `${Date.now()}-${file.originalname}`;
+      req.body.file = filename; // Add this line
+      cb(null, filename);
+    },
+  });
 
 const upload = multer({ storage });
 

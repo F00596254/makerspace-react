@@ -118,7 +118,26 @@ console.log(error)
           className="border p-2 rounded"
           dangerouslySetInnerHTML={{ __html: currentTicket.details }}
         ></div>
+        {currentTicket.attachments && currentTicket.attachments.length > 0 && (
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700">Attachments</label>
+          <div className="flex flex-col space-y-2">
+            {currentTicket.attachments.map((attachment, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <a
+href={`http://localhost:3000/uploads/${attachment}`}                  download
+                  className="text-blue-500 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View/Download Attachment {index + 1}
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>)}
       </div>
+      
     </div>
   )}
 </Modal>
