@@ -1,11 +1,14 @@
 import React,{useEffect,useState} from 'react'
 import Modal from 'react-modal';
 import ClipLoader from "react-spinners/ClipLoader";
+import { submitComment } from '../buttonActions/submitAdminComment';
 const AllTickets = () => {
     const [tickets, setTickets] = useState();
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [currentTicket, setCurrentTicket] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [comment,setComment] = useState({})
+    const [oldComment, setOldComment] = useState({});
     useEffect(() => {
         const fetchTickets = async () => {
           try {
@@ -15,6 +18,7 @@ const AllTickets = () => {
             }
             const data = await response.json();
             setTickets(data);
+            setTickets(data.reverse());
             setLoading(false);
           } catch (error) {
             // setError(error);
@@ -24,6 +28,28 @@ console.log(error)
         };
     
         fetchTickets();
+
+        const fetchComments = async () => {
+          setLoading(true);
+          try {
+            const response = await fetch('http://localhost:3000/ticket/getAllComments');
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            // setComment(data);
+            setOldComment(data);
+            
+          }
+          catch (error) {
+            console.error('There was an error retrieving the comments:', error);  
+          }
+          finally {
+            setLoading(false);
+          }
+        }
+
+          fetchComments();
       }, []); 
 
       const openModal = (ticket) => {
@@ -35,6 +61,18 @@ console.log(error)
         setModalIsOpen(false);
       };
     
+       const updateComment = (id) => (e) => {
+        setComment({ ...comment, [id]: e.target.value });
+
+
+       } 
+       const newComment = async (currentTicket) => {
+        try {
+          submitComment(currentTicket._id,comment[currentTicket._id]);
+        } catch (error) {
+          console.error('There was an error submitting the comment:', error);
+        }
+      }  
   return (
     <div>AllTickets
 
@@ -49,6 +87,8 @@ console.log(error)
                 <th className="px-6 py-4 border-b-2 border-gray-300">Name</th>
                 <th className="px-6 py-4 border-b-2 border-gray-300">Role</th>
                 <th className="px-6 py-4 border-b-2 border-gray-300">View</th>
+                <th className="px-6 py-4 border-b-2 border-gray-300 col-span-2">Comment</th>
+
             </tr>
         </thead>
         <tbody>
@@ -60,6 +100,11 @@ console.log(error)
                     <td className="px-6 py-4 border-b border-gray-300">{ticket.name}</td>
                     <td className="px-6 py-4 border-b border-gray-300">{ticket.role}</td>
                     <td className="px-6 py-4 border-b border-gray-300 "><button onClick={() => openModal(ticket)} className='text-blue-500'>View</button></td>
+                    <td className="px-6 py-4 border-b border-gray-300 "><input type='text' placeholder='Comment' onChange={(e) => setComment({ ...comment, [ticket._id]: e.target.value })} value={comment[ticket._id] || ''}></input></td>
+                    <td className="px-6 py-4 border-b border-gray-300 ">
+                      <button  className='text-green-500' onClick={()=>newComment(ticket)}>Submit</button>
+                      </td>
+                      {console.log(comment)}
                 </tr>
             ))}
             

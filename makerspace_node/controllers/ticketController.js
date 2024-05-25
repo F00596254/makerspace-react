@@ -2,7 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const Ticket = require('../models/tickets');
-
+const Comment = require('../models/ticketComment');
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, path.join(__dirname, '..', 'uploads'));
@@ -50,4 +50,27 @@ const getAllTickets = async (req, res) => {
     }
     }
 
-module.exports = { submitTicket, upload, getAllTickets };
+const submitComment = async (req, res) => {
+  try{
+    const {id, comment} = req.body;
+    const ticketComment = new Comment({ 
+      ticketId:id,
+      comment
+    });
+    await ticketComment.save();
+    res.status(200).json({message: 'Comment submitted successfully'});
+  }
+  catch (error) {
+    res.status(500).json({ message: 'Failed to submit comment', error: error.message });
+}
+}
+
+const getAllComments = async (req, res) => {
+  try {
+    const comments = await Comment.find();
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to retrieve comments', error: error.message });
+  }
+}
+module.exports = { submitTicket, upload, getAllTickets, submitComment, getAllComments };
