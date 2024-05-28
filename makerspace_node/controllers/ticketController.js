@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const Ticket = require('../models/tickets');
 const Comment = require('../models/ticketComment');
+const mailService = require('../service/mailService');
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, path.join(__dirname, '..', 'uploads'));
@@ -34,6 +35,12 @@ const submitTicket = async (req, res) => {
     });
 
     await ticket.save();
+    mailService.sendMail({
+      from: '',
+      to: email,
+      subject: 'Ticket Submitted Successfully',
+      text: `Your ticket has been submitted successfully. Your ticket ID is ${ticket._id}`,
+    });
     res.status(200).json({ message: 'Ticket submitted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to submit ticket', error: error.message });
