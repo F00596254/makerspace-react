@@ -1,29 +1,19 @@
-export async function submitTicket(data) {
-    const {id,comment} = data;
-  
-    try {
-      const response = await fetch('http://localhost:3000/ticket/submitTicket', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: {id,comment} ,
+export const submitTicket = async (ticketId, comment) => {
+  try {
+      const response = await fetch('http://localhost:3000/ticket/submitComment', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ticketId, comment }),
       });
-  
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error('Network response was not ok');
       }
-  
-      const res = await response.json();
-  
-      if (res.message === 'Ticket submitted successfully') {
-        alert(res.message);
-      } else {
-        alert(res.message);
-      }
-    } catch (error) {
-      console.error('There was an error submitting the ticket:', error);
-      alert('An error occurred while submitting the ticket. Please try again later.');
-    }
+      const data = await response.json();
+      return data;
+  } catch (error) {
+      console.error('There was an error submitting the comment:', error);
+      throw error;
   }
-  
+};

@@ -74,10 +74,12 @@ const submitComment = async (req, res) => {
 
 const getAllComments = async (req, res) => {
   try {
-    const comments = await Comment.find();
+    const { ticketId } = req.query;
+    const comments = ticketId ? await Comment.find({ ticketId }) : await Comment.find();
     res.status(200).json(comments);
   } catch (error) {
     res.status(500).json({ message: 'Failed to retrieve comments', error: error.message });
   }
-}
+};
+
 module.exports = { submitTicket, upload, getAllTickets, submitComment, getAllComments };
