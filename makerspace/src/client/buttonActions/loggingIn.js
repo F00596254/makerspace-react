@@ -1,26 +1,26 @@
+import axios from 'axios';
+export async function LogginIn(email, password, setIsLoggedInS, navigate,setWarning) {
+    try {
+        const response = await axios.post(
+            'http://localhost:3000/api/signin',
+            { email, password },
+            { withCredentials: true }
+        );
 
-export async function LogginIn(email,password,setIsLoggedInS,navigate,setWarning){
-     
-    let response= await fetch("http://localhost:3000/api/signin",{
-         method:"POST",
-         headers:{
-             "Content-Type":"application/json"
-         },
-         body:JSON.stringify({
-             email:email,
-             password:password
-         })
-     })
-           let data=await response.json();
-             if(data.success){
-                 setWarning("");   
-                 setIsLoggedInS(true)
-                 localStorage.setItem("token",data.success)
-                 sessionStorage.setItem("token",data.token);
-                 alert("you have successfully logged in ");
-                 navigate("/home");
-             }else{
-                //  alert(data.msg);
-                setWarning(data.msg);
-             }
- }
+        const data = response.data;
+
+        if (data.success) {
+            setWarning("");  
+            setIsLoggedInS(true);
+            localStorage.setItem('token', data.success);  // Use data.token to store token in localStorage
+            sessionStorage.setItem('token', data.token);
+            alert('You have successfully logged in');
+            navigate('/home');
+        } else {
+            setWarning(data.msg);
+        }
+    } catch (error) {
+        console.error('Error during sign-in:', error);
+        alert('An error occurred. Please try again.');
+    }
+}
