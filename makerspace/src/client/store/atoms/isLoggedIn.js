@@ -1,12 +1,10 @@
-
-import {atom} from "recoil"
+import { atom } from "recoil";
 let token = localStorage.getItem("token");
-if(token =="" || token == undefined ){
-    token=false;
+if (token == "" || token == undefined) {
+  token = false;
 }
-const defaultLoggedIn = token !== null ? JSON.parse(token) : false;
-export const isLoggedIn=atom({
-    key:"isLoggedIn",
-    default:defaultLoggedIn
-})
- 
+const defaultLoggedIn = token !== null ? token : false;
+export const isLoggedIn = atom({
+  key: "isLoggedIn",
+  default: defaultLoggedIn,
+});
