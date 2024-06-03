@@ -1,17 +1,19 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const connectDB = require("./config/db.js");
-const userRoutes = require("./routes/userRoutes.js");
-const emailRoutes = require("./routes/emailRoutes.js");
-const cors = require("cors");
-// const key= require("./config/secret.js");
+const express = require('express');
+const bodyParser = require('body-parser');
+const connectDB = require('./config/db.js');
+const userRoutes = require('./routes/userRoutes.js');
+const cors=require('cors')
+const emailRoutes = require('./routes/emailRoutes.js')
+const ticketRoutes = require('./routes/ticketRoutes.js');
+const path = require('path');
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // Adjust the destination folder as needed
 
-// Initialize Express app
 const app = express();
 const store = new MongoDBStore({
-  uri: "mongodb://localhost:27017/makerspace",
+  uri: "mongodb://127.0.0.1:27017/Makerspace",
   collection: "sessions",
 });
 
@@ -21,7 +23,7 @@ connectDB();
 // Configure CORS to allow credentials (cookies) from the frontend
 app.use(
   cors({
-    origin: "http://localhost:5174", // React app's origin
+    origin: ["http://localhost:5174", "http://localhost:5173"], // React app's origin
     credentials: true, // Allow cookies to be sent with requests
   })
 );
@@ -51,6 +53,11 @@ app.use(
 // Routes
 app.use("/api", userRoutes);
 app.use("/mail", emailRoutes);
+app.use('/ticket', ticketRoutes); 
+
+app.get('/uploads/:filename', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'uploads', req.params.filename));
+  });
 
 // Start the server
 const PORT = process.env.PORT || 3000;

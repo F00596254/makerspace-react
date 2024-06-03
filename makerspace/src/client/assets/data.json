@@ -1,0 +1,25 @@
+{
+    "department": [
+      { "label": "Bussiness School", "value": "Bussiness School" },
+      { "label": "Computer Science", "value": "Computer Science" },
+      { "label": "Pharmacy School", "value": "Pharmacy School" },
+      { "label": "Engineering School", "value": "Engineering School" },
+      { "label": "Others", "value": "Others" }
+    ],
+    "priority": [
+      { "label": "Low", "value": "Low" },
+      { "label": "Medium", "value": "Medium" },
+      { "label": "High", "value": "High" }
+    ],
+    "ticketType": [
+        { "label": "3d Printing Request", "value": "3d Printing request" },
+        { "label": "Customer Service", "value": "Customer Service" },
+        { "label": "Consulting", "value": "Consulting" }
+      ],
+      "identity": [
+        { "label": "Student", "value": "Student" },
+        { "label": "Faculty", "value": "Faculty" },
+        { "label": "Community Member", "value": "Community Member" }
+      ]
+
+  }
