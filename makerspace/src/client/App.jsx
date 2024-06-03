@@ -9,13 +9,16 @@ import Home from './pages/Home';
 import Footer from './components/Footer';
 import About from './pages/About';
 import Services from './pages/Services';
+import PasswordChange from './pages/PasswordChange';
 import Contact from './pages/Contact';
 import { RecoilRoot } from 'recoil';
 import AccountDetails from './pages/AccountDetails';
+import ForgotPassword from './pages/ForgotPassword';
+import EnterYourEmail from './pages/EnterEmail';
 
 function App() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col  min-h-screen ">
       <BrowserRouter>
       
           <RecoilRoot>
@@ -26,6 +29,9 @@ function App() {
           <Route path='/home' element={<Home/>}></Route>
           <Route path='/about' element={<About/>}></Route>
           <Route path='/accountdetails' element={<AccountDetails/>}></Route>
+          <Route path='/passwordchange' element={<PasswordChange/>}></Route>
+          <Route path='/forgotpassword' element={<ForgotPassword/>}></Route>
+          <Route path='/enteremail' element={<EnterYourEmail/>}></Route>
           <Route path='/services' element={<Services/>}></Route>
           <Route path='/contact' element={<Contact/>}></Route>
         </Routes>

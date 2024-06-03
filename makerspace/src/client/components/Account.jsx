@@ -21,7 +21,7 @@ export default function Account(){
       }, 200); // Adjust the delay time as needed
     };
     
-    console.log(isloggedin+" from Account jsx ")
+     
     if(!isloggedin){
           return (
               <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -60,8 +60,12 @@ export default function Account(){
                   <button className="block w-full text-left text-md font-bold px-4 py-2 hover:bg-gray-100" >
                   <Link to={"/accountdetails"} > Account details </Link>
                   </button>
+                  <button className="block w-full text-left text-md font-bold px-4 py-2 hover:bg-gray-100" >
+                  <Link to={"/passwordchange"} >Password change </Link>
+                  </button>
                   <button onClick={()=>{
                       localStorage.setItem("token",false);
+                      sessionStorage.setItem("token","");
                       setisloggedin(false);
                   }} className="block w-full text-left text-md font-bold px-4 py-2 hover:bg-gray-100">
                     <Link to={"/signin"}> LOG OUT  </Link> 

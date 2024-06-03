@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react"
-import PasswordToggle from "../components/PasswordField";
+import TextFields from "../components/TextFields";
 import Button from "../components/Button"
+import { updateNames } from "../buttonActions/updateNames";
 export default function AccountDetails(){
 
     const[email,setEmail]=useState("");
     const[firstName,setFirstName]=useState("");
     const[lastName,setLastName]=useState("");
+    const[updateFname,setUpdateFname]=useState("");
+    const[updateLname,setUpdateLname]=useState("");
     useEffect(()=>{
          fetch("http://localhost:3000/api/userDetails",{
             method:"GET",
@@ -40,34 +43,32 @@ export default function AccountDetails(){
                <div className="h-0.5 mt-8 border"></div>
                <div className="mb-28">
                         <div className="mt-8 m-2 pl-4  text-gray-500 font-medium text-2xl">
-                            Password Change
+                            CHANGE YOUR NAME HERE
                         </div>
                         <div >
                             <div className="ml-8 m-4 font-normal text-2xl">
-                            Current Password:                               
+                            FIRST NAME:                               
                             </div>
                             <div className="w-4/12 ml-8">
-                                <PasswordToggle/>
-                            </div>
-                        </div>
-                        <div >
-                            <div className="ml-8 m-4 font-normal text-2xl">
-                            New Password:                               
-                            </div>
-                            <div className="w-4/12 ml-8">
-                                <PasswordToggle/>
+                                <TextFields onChange={(e)=>{
+                                    setUpdateFname(e.target.value)
+                                }}/>
                             </div>
                         </div>
                         <div >
                             <div className="ml-8 m-4 font-normal text-2xl">
-                            Confirm New Password:                               
+                            LAST NAME:                               
                             </div>
                             <div className="w-4/12 ml-8">
-                                <PasswordToggle/>
+                                <TextFields onChange={(e)=>{
+                                    setUpdateLname(e.target.value)
+                                }} />
                             </div>
                         </div>
+                        
+                        
                         <div className="m-8 w-24">
-                            <Button label={"Submit"}/>
+                            <Button label={"Submit"} onClick={()=>updateNames(updateFname,updateLname)}/>
                         </div>
                </div>
 

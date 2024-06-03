@@ -1,5 +1,5 @@
 
-export async function LogginIn(email,password,setIsLoggedInS,navigate){
+export async function LogginIn(email,password,setIsLoggedInS,navigate,setWarning){
      
     let response= await fetch("http://localhost:3000/api/signin",{
          method:"POST",
@@ -13,12 +13,14 @@ export async function LogginIn(email,password,setIsLoggedInS,navigate){
      })
            let data=await response.json();
              if(data.success){
+                 setWarning("");   
                  setIsLoggedInS(true)
                  localStorage.setItem("token",data.success)
                  sessionStorage.setItem("token",data.token);
                  alert("you have successfully logged in ");
                  navigate("/home");
              }else{
-                 alert(data.msg);
+                //  alert(data.msg);
+                setWarning(data.msg);
              }
  }

@@ -9,4 +9,9 @@ export const isLoggedIn=atom({
     key:"isLoggedIn",
     default:defaultLoggedIn
 })
+
+export const warning=atom({
+    key:"warning",
+    default:""
+})
  
