@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect('mongodb+srv://ganeshkrishnagoud:Manga22%40!@cluster0.6yuwlzk.mongodb.net/Makerspace', {
+        const conn = await mongoose.connect('mongodb://localhost:27017/makerspace', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
