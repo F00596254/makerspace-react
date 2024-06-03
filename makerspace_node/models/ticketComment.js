@@ -3,12 +3,10 @@ const Schema = mongoose.Schema;
 const ticketCommentSchema = new Schema({
     ticketId: {
         type: Schema.Types.ObjectId,
-        ref: 'Ticket',
-        required: true,
+        ref: 'Ticket'
     },
     comment: {
-        type: String,
-        required: true,
+        type: String
     },
     createdAt: {
         type: Date,
