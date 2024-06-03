@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import axios from 'axios';
 import PasswordToggle from "../components/PasswordField";
 import Button from "../components/Button"
 export default function AccountDetails(){
@@ -7,18 +8,27 @@ export default function AccountDetails(){
     const[firstName,setFirstName]=useState("");
     const[lastName,setLastName]=useState("");
     useEffect(()=>{
-         fetch("http://localhost:3000/api/userDetails",{
-            method:"GET",
-            headers:{
-                "authorization":sessionStorage.getItem("token"),
-                "Content-Type":"application/json"
+        const fetchUserDetails = async () => {
+            try {
+              const response = await axios.get('http://localhost:3000/api/userDetails', {
+                headers: {
+                  'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+                  'Content-Type': 'application/json',
+                },
+                withCredentials: true,
+              });
+      
+              const data = response.data;
+              setEmail(data.email);
+              setFirstName(data.firstName);
+              setLastName(data.lastName);
+            } catch (error) {
+              console.error('Error fetching user details:', error);
+              // Handle error appropriately, e.g., show a notification
             }
-        }).then(async(response)=>{
-                let data=await response.json();
-                setEmail(data.email)
-                setFirstName(data.firstName);
-                setLastName(data.lastName);
-        })
+        };
+      
+        fetchUserDetails();
     },[]);  
 
     return <>

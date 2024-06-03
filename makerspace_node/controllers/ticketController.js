@@ -35,14 +35,16 @@ const submitTicket = async (req, res) => {
     });
 
     await ticket.save();
-    mailService.sendMail({
+    await mailService.sendMail({
       from: '',
       to: email,
       subject: 'Ticket Submitted Successfully',
       text: `Your ticket has been submitted successfully. Your ticket ID is ${ticket._id}`,
     });
+
     res.status(200).json({ message: 'Ticket submitted successfully' });
   } catch (error) {
+    console.error('Error submitting ticket:', error); // Log the error for debugging
     res.status(500).json({ message: 'Failed to submit ticket', error: error.message });
   }
 };
