@@ -18,6 +18,7 @@ import EnterYourEmail from './pages/EnterEmail';
 
 import Tickets from './pages/Tickets';
 import AllTickets from './pages/AllTickets';
+import MyTickets from './pages/MyTickets';
 function App() {
   return (
     <div className="flex flex-col  min-h-screen ">
@@ -37,6 +38,7 @@ function App() {
           <Route path='/services' element={<Services/>}></Route>
           <Route path='/contact' element={<Contact/>}></Route>
           <Route path='/tickets' element={<Tickets/>}></Route>
+          <Route path='/MyTickets' element={<MyTickets/>}></Route>
           <Route path='/allTickets' element={<AllTickets/>}></Route>
         
         </Routes>

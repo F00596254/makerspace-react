@@ -88,7 +88,6 @@ const getAllComments = async (req, res) => {
 const getMyTickets = async (req, res) => {
     
   try {
-    console.log(shortid.generate())
     const tickets = await Ticket.find({ email: req.email });
     res.status(200).json(tickets);
   } catch (error) {
