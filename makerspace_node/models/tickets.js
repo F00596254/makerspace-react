@@ -37,6 +37,9 @@ const ticketSchema = new Schema({
         type: String,
         required: true,
     },
+    ticketID: {
+        type: String,
+    },
     attachments: { type: [String], default: [] },  // Ensure attachments is an array of strings
 
 });

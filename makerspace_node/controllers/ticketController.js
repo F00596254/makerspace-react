@@ -4,6 +4,7 @@ const fs = require('fs');
 const Ticket = require('../models/tickets');
 const Comment = require('../models/ticketComment');
 const mailService = require('../service/mailService');
+const shortid = require('shortid');
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, path.join(__dirname, '..', 'uploads'));
@@ -19,7 +20,7 @@ const upload = multer({ storage });
 
 const submitTicket = async (req, res) => {
   const { email, name, phone, department, priority, ticketType, role, subject, details } = req.body;
-
+  ticketID = name.substr(0,3) + department.charAt(0).toUpperCase() + ticketType.charAt(0).toUpperCase()  + role.charAt(0).toUpperCase()  +  shortid.generate();
   try {
     const ticket = new Ticket({
       email,
@@ -29,17 +30,17 @@ const submitTicket = async (req, res) => {
       priority,
       ticketType,
       role,
+      ticketID ,
       subject,
       details,
       attachments: req.files ? req.files.map(file => file.path) : [],
     });
-
     await ticket.save();
     await mailService.sendMail({
       from: '',
       to: email,
       subject: 'Ticket Submitted Successfully',
-      text: `Your ticket has been submitted successfully. Your ticket ID is ${ticket._id}`,
+      text: `Your ticket has been submitted successfully. Your ticket ID is ${ticketID}`,
     });
 
     res.status(200).json({ message: 'Ticket submitted successfully' });
@@ -84,4 +85,15 @@ const getAllComments = async (req, res) => {
   }
 };
 
-module.exports = { submitTicket, upload, getAllTickets, submitComment, getAllComments };
+const getMyTickets = async (req, res) => {
+    
+  try {
+    console.log(shortid.generate())
+    const tickets = await Ticket.find({ email: req.email });
+    res.status(200).json(tickets);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to retrieve tickets', error: error.message });
+  }
+  
+}
+module.exports = { submitTicket, upload, getAllTickets, submitComment, getAllComments, getMyTickets };
