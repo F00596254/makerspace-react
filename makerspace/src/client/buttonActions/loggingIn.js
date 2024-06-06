@@ -3,7 +3,11 @@ export async function LogginIn(email, password, setIsLoggedInS, navigate,setWarn
     try {
         const response = await axios.post(
             'http://localhost:3000/api/signin',
-            { email, password },
+            { email, password },{
+                headers:{
+                    Authorization: sessionStorage.getItem("token")
+                }
+            },
             { withCredentials: true }
         );
 

@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Link} from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isLoggedIn } from "../store/atoms/isLoggedIn";
+import { handleLogout } from "../buttonActions/handleLogout";
  
 
 export default function Account() {
@@ -67,6 +68,7 @@ export default function Account() {
                       localStorage.setItem("token",false);
                       sessionStorage.setItem("token","");
                       setisloggedin(false);
+                      handleLogout();
                   }} className="block w-full text-left text-md font-bold px-4 py-2 hover:bg-gray-100">
                     <Link to={"/signin"}> LOG OUT  </Link> 
                   </button>
