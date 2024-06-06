@@ -257,7 +257,8 @@ exports.updateNames = async (req, res) => {
 exports.userDetails = async (req, res) => {
   try {
 
-    const payload = req.headers.authorization;
+    let payload = req.headers.authorization;
+    payload=payload.split(" ")[1];
     const email = jwt.verify(payload, key);
     const user = await User.findOne({ email });
     console.log(user);
