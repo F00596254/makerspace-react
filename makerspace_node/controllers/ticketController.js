@@ -86,13 +86,45 @@ const getAllComments = async (req, res) => {
 };
 
 const getMyTickets = async (req, res) => {
-    
   try {
-    const tickets = await Ticket.find({ email: req.email });
+    const { email } = req;
+    const { searchTerm, priority, department, ticketType, identity } = req.query;
+
+    // Construct a dynamic query object
+    let query = { email };
+
+    if (searchTerm) {
+      query.$or = [
+        { name: { $regex: searchTerm, $options: 'i' } },
+        { ticketType: { $regex: searchTerm, $options: 'i' } },
+        { priority: { $regex: searchTerm, $options: 'i' } },
+        { ticketID: { $regex: searchTerm, $options: 'i' } },
+        { subject: { $regex: searchTerm, $options: 'i' } },
+        { details: { $regex: searchTerm, $options: 'i' } }
+      ];
+    }
+
+    if (priority) {
+      query.priority = priority;
+    }
+
+    if (department) {
+      query.department = department;
+    }
+
+    if (ticketType) {
+      query.ticketType = ticketType;
+    }
+
+    if (identity) {
+      query.identity = identity;
+    }
+
+    const tickets = await Ticket.find(query);
     res.status(200).json(tickets);
   } catch (error) {
     res.status(500).json({ message: 'Failed to retrieve tickets', error: error.message });
   }
-  
-}
+};
+
 module.exports = { submitTicket, upload, getAllTickets, submitComment, getAllComments, getMyTickets };
