@@ -8,12 +8,13 @@ const ticketRoutes = require('./routes/ticketRoutes.js');
 const path = require('path');
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
+require('dotenv').config();
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); // Adjust the destination folder as needed
 
 const app = express();
 const store = new MongoDBStore({
-  uri: "mongodb://127.0.0.1:27017/Makerspace",
+  uri: process.env.URI,
   collection: "sessions",
 });
 
