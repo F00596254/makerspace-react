@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { submitComment } from '../buttonActions/submitAdminComment';
+import data from './../assets/data.json'; // Adjust the import path as necessary
 
 const AllTickets = () => {
     const [tickets, setTickets] = useState([]);
@@ -10,11 +11,25 @@ const AllTickets = () => {
     const [loading, setLoading] = useState(true);
     const [comment, setComment] = useState({});
     const [oldComments, setOldComments] = useState({});
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filters, setFilters] = useState({
+        priority: '',
+        department: '',
+        ticketType: '',
+        identity: ''
+    });
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
 
     useEffect(() => {
         const fetchTickets = async () => {
             try {
-                const response = await fetch('http://localhost:3000/ticket/getAllTickets');
+                const queryParams = new URLSearchParams({
+                    searchTerm,
+                    ...filters,
+                }).toString();
+
+                const response = await fetch(`http://localhost:3000/ticket/getAllTickets?${queryParams}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -46,7 +61,7 @@ const AllTickets = () => {
 
         fetchTickets();
         fetchComments();
-    }, []);
+    }, [searchTerm, filters]);
 
     const openModal = (ticket) => {
         setCurrentTicket(ticket);
@@ -70,8 +85,85 @@ const AllTickets = () => {
         }
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1); // Reset to first page on search
+    };
+
+    const handleFilterChange = (e) => {
+        setFilters({
+            ...filters,
+            [e.target.name]: e.target.value
+        });
+        setCurrentPage(1); // Reset to first page on filter
+    };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    const filteredTickets = tickets.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    const totalPages = Math.ceil(tickets.length / itemsPerPage);
+
     return (
-        <div>AllTickets
+        <div className="p-4">
+            <div className="flex flex-wrap mb-4">
+                <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    className="px-4 py-2 border rounded mr-4"
+                />
+                <select
+                    name="priority"
+                    value={filters.priority}
+                    onChange={handleFilterChange}
+                    className="px-4 py-2 border rounded mr-4"
+                >
+                    <option value="">All Priorities</option>
+                    {data.priority.map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                </select>
+                <select
+                    name="department"
+                    value={filters.department}
+                    onChange={handleFilterChange}
+                    className="px-4 py-2 border rounded mr-4"
+                >
+                    <option value="">All Departments</option>
+                    {data.department.map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                </select>
+                <select
+                    name="ticketType"
+                    value={filters.ticketType}
+                    onChange={handleFilterChange}
+                    className="px-4 py-2 border rounded mr-4"
+                >
+                    <option value="">All Ticket Types</option>
+                    {data.ticketType.map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                </select>
+                <select
+                    name="identity"
+                    value={filters.identity}
+                    onChange={handleFilterChange}
+                    className="px-4 py-2 border rounded"
+                >
+                    <option value="">All Identities</option>
+                    {data.identity.map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                </select>
+            </div>
             <div className="flex justify-center bg-white text-black">
                 {loading ? <ClipLoader color="#080f9c" loading={loading} size={50} /> :
                     <table className="table-auto border-collapse border-2 border-gray-300 text-left">
@@ -87,7 +179,7 @@ const AllTickets = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {tickets.map((ticket) => (
+                            {filteredTickets.map((ticket) => (
                                 <tr key={ticket._id}>
                                     <td className="px-6 py-4 border-b border-gray-300">{ticket.ticketType}</td>
                                     <td className="px-6 py-4 border-b border-gray-300">{ticket.priority}</td>
@@ -190,6 +282,23 @@ const AllTickets = () => {
                     </div>
                 )}
             </Modal>
+
+            {/* Pagination */}
+            <div className="flex justify-center mt-4">
+                <ul className="flex">
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <li
+                            key={i}
+                            className={`px-3 py-1 cursor-pointer ${
+                                currentPage === i + 1 ? 'bg-gray-300' : 'hover:bg-gray-200'
+                            }`}
+                            onClick={() => handlePageChange(i + 1)}
+                        >
+                            {i + 1}
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 };
