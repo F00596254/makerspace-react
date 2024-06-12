@@ -8,10 +8,21 @@ require('dotenv').config();
 
 const { passwordSchema } = require('../models/zod');
 const { transporter } = require('../service/mailService');
+const Role = require("../models/role");
+const Privilege = require("../models/privilege");
+
 exports.signup = async (req, res) => {
   try {
+    const defaultRole = await Role.findOne({ role_name: 'User' });
+    if (!defaultRole) {
+      return res.status(500).json({
+        success: false,
+        msg: "Default role 'User' not found. Please ensure it's set up correctly.",
+      });
+    }
+
     const { email, password, first_name, last_name } = req.body;
-    const newUser = new User({ email, password, first_name, last_name });
+    const newUser = new User({ email, password, first_name, last_name, role_id: defaultRole._id });
     await newUser.save();
     const token = jwt.sign(newUser.email, key);
     req.session.isLoggedIn = true;
@@ -37,7 +48,7 @@ exports.signin = async (req, res) => {
   try {
     req.session.isLoggedIn = true;
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).populate('role_id');
 
     let userFound = Boolean(user);
 
@@ -54,10 +65,12 @@ exports.signin = async (req, res) => {
         .json({
           success: false,
           token: token,
+          isAdmin: true,
           msg: "You have entered the wrong password",
         });
     }
-    res.status(200).json({ success: true, token: token });
+    const isAdmin = user.role_id.role_name === 'Admin';
+    res.status(200).json({ success: true, token: token, isAdmin: isAdmin });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while processing your request' });
@@ -257,7 +270,8 @@ exports.updateNames = async (req, res) => {
 exports.userDetails = async (req, res) => {
   try {
 
-    const payload = req.headers.authorization;
+    let payload = req.headers.authorization;
+    payload=payload.split(" ")[1];
     const email = jwt.verify(payload, key);
     const user = await User.findOne({ email });
     console.log(user);
@@ -286,9 +300,9 @@ exports.userDetails = async (req, res) => {
 exports.logout = async (req, res) => {
   try {
     req.session.isLoggedIn = false;
-    req.session.destroy((err) => {
-      if(err) throw err;
-    });
+    // req.session.destroy((err) => {
+    //   if(err) throw err;
+    // });
     res.status(200).json({
       success: true,
       msg: "User logged out.",

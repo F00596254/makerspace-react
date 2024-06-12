@@ -1,9 +1,15 @@
 import axios from 'axios';
-export async function LogginIn(email, password, setIsLoggedInS, navigate,setWarning) {
+import { setIsAdmin } from '../store/actions/actions';
+
+export async function LogginIn(email, password, setIsLoggedInS, navigate, setWarning, dispatch) {
     try {
         const response = await axios.post(
             'http://localhost:3000/api/signin',
-            { email, password },
+            { email, password },{
+                headers:{
+                    Authorization: sessionStorage.getItem("token")
+                }
+            },
             { withCredentials: true }
         );
 
@@ -12,8 +18,10 @@ export async function LogginIn(email, password, setIsLoggedInS, navigate,setWarn
         if (data.success) {
             setWarning("");  
             setIsLoggedInS(true);
-            localStorage.setItem('token', data.success);  // Use data.token to store token in localStorage
+            const isAdmin = data.isAdmin || false;
+            localStorage.setItem('token', data.token);  // Use data.token to store token in localStorage
             sessionStorage.setItem('token', data.token);
+            dispatch(setIsAdmin(isAdmin));
             alert('You have successfully logged in');
             navigate('/home');
         } else {

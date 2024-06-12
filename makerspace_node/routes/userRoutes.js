@@ -1,17 +1,17 @@
 const express = require('express');
-const userController = require('../controllers/userController');
+const { signup, signin, userDetails, logout, updatepassword, updateNames, checkEmailAccount, forgotpassword, emailVerification } = require('../controllers/userController');
 const router = express.Router();
 
  
  
-router.post('/updatepassword',userController.updatepassword)
-router.post('/updatenames',userController.updateNames)
-router.post('/check-email',userController.checkEmailAccount)
-router.post('/forgot-password',userController.forgotpassword)
-router.post('/reset-password',userController.emailVerification)
-router.post('/signup', userController.signup);
-router.post('/signin', userController.signin);
-router.get('/userDetails', userController.userDetails);
-router.post('/logout', userController.logout);
+router.post('/updatepassword', updatepassword)
+router.post('/updatenames', updateNames)
+router.post('/check-email', checkEmailAccount)
+router.post('/forgot-password', forgotpassword)
+router.post('/reset-password', emailVerification)
+router.post('/signup', signup);
+router.post('/signin', signin);
+router.get('/userDetails', userDetails);
+router.post('/logout', logout);
 
 module.exports = router;
