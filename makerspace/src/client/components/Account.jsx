@@ -1,10 +1,13 @@
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isLoggedIn } from "../store/atoms/isLoggedIn";
 import axios from "axios";
+import { setIsAdmin } from "../store/actions";
 
 export default function Account() {
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const timeoutRef = useRef(null);
   const isloggedin = useRecoilValue(isLoggedIn);
@@ -24,6 +27,7 @@ export default function Account() {
   const handleLogOut = async () => {
     try {
       localStorage.removeItem("token");
+      dispatch(setIsAdmin(false));
       setisloggedin(false);
       const response = await axios.post(
         "http://localhost:3000/api/logout",
@@ -41,7 +45,7 @@ export default function Account() {
     }
   };
 
-  console.log(isloggedin + " from Account jsx ");
+  // console.log(isloggedin + " from Account jsx ");
   if (!isloggedin) {
     return (
       <div
