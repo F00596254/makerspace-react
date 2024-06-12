@@ -21,7 +21,7 @@ connectDB();
 // Configure CORS to allow credentials (cookies) from the frontend
 app.use(
   cors({
-    origin: "http://localhost:5174", // React app's origin
+    origin: ["http://localhost:5173", "http://localhost:5174"], // React app's origin
     credentials: true, // Allow cookies to be sent with requests
   })
 );

@@ -3,12 +3,14 @@ const  bcrypt = require('bcrypt');
 
 
 const userSchema = new mongoose.Schema({
-    email: { type: String, unique: true, required: true },
-    password: { type: String, required: true },
-    first_name: String,
-    last_name: String,
-    created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date, default: Date.now }
+  email: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
+  first_name: String,
+  last_name: String,
+  department: String,
+  role_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Role' },
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now }
 });
 
 userSchema.pre('save', async function (next) {
