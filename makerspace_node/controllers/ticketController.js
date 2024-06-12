@@ -53,7 +53,7 @@ const submitTicket = async (req, res) => {
 
 const getAllTickets = async (req, res) => {
   try {
-    const { searchTerm, priority, department, ticketType, identity } = req.query;
+    const { searchTerm, priority, department, ticketType, identity, status } = req.query;
 
     // Construct a dynamic query object
     let query = {};
@@ -83,6 +83,10 @@ const getAllTickets = async (req, res) => {
 
     if (identity) {
       query.identity = identity;
+    }
+
+    if (status) {
+      query.status = status;
     }
 
     const tickets = await Ticket.find(query);
@@ -158,5 +162,24 @@ const getMyTickets = async (req, res) => {
     res.status(500).json({ message: 'Failed to retrieve tickets', error: error.message });
   }
 };
+const updateTicketStatus= async (req, res) => {
+  const { id } = req.params;
+    const { status } = req.body;
 
-module.exports = { submitTicket, upload, getAllTickets, submitComment, getAllComments, getMyTickets };
+    try {
+        // Assuming you have a Ticket model
+        const ticket = await Ticket.findById(id);
+        if (!ticket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+        }
+
+        ticket.status = status;
+        await ticket.save();
+
+        res.json(ticket);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    } 
+}
+module.exports = { submitTicket, upload, getAllTickets, submitComment, getAllComments, getMyTickets, updateTicketStatus  };

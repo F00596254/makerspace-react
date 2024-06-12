@@ -20,6 +20,13 @@
         { "label": "Student", "value": "Student" },
         { "label": "Faculty", "value": "Faculty" },
         { "label": "Community Member", "value": "Community Member" }
+      ],
+      "status": [
+        { "value": "Open", "label": "Open" },
+        { "value": "In Progress", "label": "In Progress" },
+        { "value": "Ready", "label": "Ready" },
+        { "value": "Shipped", "label": "Shipped" },
+        { "value": "Closed", "label": "Closed" }
       ]
 
   }

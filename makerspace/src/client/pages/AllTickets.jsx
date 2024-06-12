@@ -16,7 +16,8 @@ const AllTickets = () => {
         priority: '',
         department: '',
         ticketType: '',
-        identity: ''
+        identity: '',
+        status: '',
     });
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
@@ -34,7 +35,7 @@ const AllTickets = () => {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-                setTickets(data.reverse());
+                setTickets(data.sort((a, b) => (a.status === 'Closed' ? 1 : -1)));
             } catch (error) {
                 console.log(error);
             } finally {
@@ -102,6 +103,25 @@ const AllTickets = () => {
         setCurrentPage(page);
     };
 
+    const handleStatusChange = async (id, status) => {
+        try {
+            const response = await fetch(`http://localhost:3000/ticket/updateStatus/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status }),
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const updatedTicket = await response.json();
+            setTickets(tickets.map(ticket => ticket._id === id ? updatedTicket : ticket).sort((a, b) => (a.status === 'Closed' ? 1 : -1)));
+        } catch (error) {
+            console.error('There was an error updating the ticket status:', error);
+        }
+    };
+
     const filteredTickets = tickets.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
@@ -156,56 +176,92 @@ const AllTickets = () => {
                     name="identity"
                     value={filters.identity}
                     onChange={handleFilterChange}
-                    className="px-4 py-2 border rounded"
+                    className="px-4 py-2 border rounded mr-4"
                 >
                     <option value="">All Identities</option>
                     {data.identity.map(option => (
                         <option key={option.value} value={option.value}>{option.label}</option>
                     ))}
                 </select>
+                <select
+                    name="status"
+                    value={filters.status}
+                    onChange={handleFilterChange}
+                    className="px-4 py-2 border rounded"
+                >
+                    <option value="">All Statuses</option>
+                    {data.status.map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                </select>
             </div>
             <div className="flex justify-center bg-white text-black">
-                {loading ? <ClipLoader color="#080f9c" loading={loading} size={50} /> :
-                    <table className="table-auto border-collapse border-2 border-gray-300 text-left">
-                        <thead>
-                            <tr>
-                                <th className="px-6 py-4 border-b-2 border-gray-300">Ticket Type</th>
-                                <th className="px-6 py-4 border-b-2 border-gray-300">Priority</th>
-                                <th className="px-6 py-4 border-b-2 border-gray-300">Department</th>
-                                <th className="px-6 py-4 border-b-2 border-gray-300">Name</th>
-                                <th className="px-6 py-4 border-b-2 border-gray-300">Role</th>
-                                <th className="px-6 py-4 border-b-2 border-gray-300">View</th>
-                                <th className="px-6 py-4 border-b-2 border-gray-300 col-span-2">Comment</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredTickets.map((ticket) => (
-                                <tr key={ticket._id}>
-                                    <td className="px-6 py-4 border-b border-gray-300">{ticket.ticketType}</td>
-                                    <td className="px-6 py-4 border-b border-gray-300">{ticket.priority}</td>
-                                    <td className="px-6 py-4 border-b border-gray-300">{ticket.department}</td>
-                                    <td className="px-6 py-4 border-b border-gray-300">{ticket.name}</td>
-                                    <td className="px-6 py-4 border-b border-gray-300">{ticket.role}</td>
-                                    <td className="px-6 py-4 border-b border-gray-300">
-                                        <button onClick={() => openModal(ticket)} className="text-blue-500">View</button>
-                                    </td>
-                                    <td className="px-6 py-4 border-b border-gray-300">
-                                        <input
-                                            type="text"
-                                            placeholder="Comment"
-                                            onChange={(e) => updateComment(ticket._id)(e)}
-                                            value={comment[ticket._id] || oldComments[ticket._id] || ''}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 border-b border-gray-300">
-                                        <button className="text-green-500" onClick={() => newComment(ticket)}>Submit</button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                }
-            </div>
+    {loading ? (
+        <ClipLoader color="#080f9c" loading={loading} size={50} />
+    ) : (
+        <div className="w-full overflow-x-auto"> {/* Add this container */}
+            <table className="table-auto border-collapse border-2 border-gray-300 text-left w-full"> {/* Add w-full to the table */}
+                <thead>
+                    <tr>
+                        <th className="px-6 py-4 border-b-2 border-gray-300">Ticket Type</th>
+                        <th className="px-6 py-4 border-b-2 border-gray-300">Priority</th>
+                        <th className="px-6 py-4 border-b-2 border-gray-300">Department</th>
+                        <th className="px-6 py-4 border-b-2 border-gray-300">Name</th>
+                        <th className="px-6 py-4 border-b-2 border-gray-300">Role</th>
+                        <th className="px-6 py-4 border-b-2 border-gray-300">Code</th>
+                        <th className="px-6 py-4 border-b-2 border-gray-300">View</th>
+                        <th className="px-6 py-4 border-b-2 border-gray-300">Status</th>
+                        <th className="px-6 py-4 border-b-2 border-gray-300 col-span-2">Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredTickets.map((ticket) => (
+                        <tr key={ticket._id}>
+                            <td className="px-6 py-4 border-b border-gray-300">{ticket.ticketType}</td>
+                            <td className="px-6 py-4 border-b border-gray-300">{ticket.priority}</td>
+                            <td className="px-6 py-4 border-b border-gray-300">{ticket.department}</td>
+                            <td className="px-6 py-4 border-b border-gray-300">{ticket.name}</td>
+                            <td className="px-6 py-4 border-b border-gray-300">{ticket.role}</td>
+                            <td className="px-6 py-4 border-b border-gray-300">{ticket.ticketID}</td>
+                            <td className="px-6 py-4 border-b border-gray-300">
+                                <button className="text-blue-500" onClick={() => openModal(ticket)}>View</button>
+                            </td>
+                            <td className="px-6 py-4 border-b border-gray-300">
+                                <select
+                                    value={ticket.status}
+                                    onChange={(e) => handleStatusChange(ticket._id, e.target.value)}
+                                    className={`border rounded px-2 py-1 ${
+                                        ticket.status === 'Open' ? 'text-green-500' :
+                                        ticket.status === 'In Progress' ? 'text-yellow-500' :
+                                        ticket.status === 'Ready' ? 'text-blue-500' :
+                                        ticket.status === 'Shipped' ? 'text-indigo-500' :
+                                        'text-gray-500'
+                                    }`}
+                                >
+                                    {data.status.map(status => (
+                                        <option key={status.value} value={status.value}>{status.label}</option>
+                                    ))}
+                                </select>
+                            </td>
+                            <td className="px-6 py-4 border-b border-gray-300">
+                                <input
+                                    type="text"
+                                    placeholder="Comment"
+                                    onChange={(e) => updateComment(ticket._id)(e)}
+                                    value={comment[ticket._id] || oldComments[ticket._id] || ''}
+                                />
+                            </td>
+                            <td className="px-6 py-4 border-b border-gray-300">
+                                <button className="text-green-500" onClick={() => newComment(ticket)}>Submit</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    )}
+</div>
+
             <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
