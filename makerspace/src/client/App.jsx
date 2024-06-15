@@ -18,6 +18,8 @@ import EnterYourEmail from './pages/EnterEmail';
 
 import Tickets from './pages/Tickets';
 import AllTickets from './pages/AllTickets';
+import AllUsers from './pages/AllUsers';
+import EditUserDetails from './pages/EditUserDetails';
 function App() {
   return (
     <div className="flex flex-col  min-h-screen ">
@@ -38,7 +40,9 @@ function App() {
           <Route path='/contact' element={<Contact/>}></Route>
           <Route path='/tickets' element={<Tickets/>}></Route>
           <Route path='/allTickets' element={<AllTickets/>}></Route>
-        
+          <Route path='/allUsers' element={<AllUsers/>}></Route>
+          <Route path='/edit-user/:id' element={<EditUserDetails/>}></Route>
+          
         </Routes>
         <Footer />
           </RecoilRoot>

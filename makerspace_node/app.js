@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db.js');
 const userRoutes = require('./routes/userRoutes.js');
+const adminRoutes = require('./routes/adminRoutes.js');
 const cors=require('cors')
 const emailRoutes = require('./routes/emailRoutes.js')
 const ticketRoutes = require('./routes/ticketRoutes.js');
@@ -53,6 +54,7 @@ app.use(
 );
 // Routes
 app.use("/api", userRoutes);
+app.use("/admin",adminRoutes)
 app.use("/mail", emailRoutes);
 app.use('/ticket', ticketRoutes); 
 
