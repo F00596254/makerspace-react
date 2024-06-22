@@ -122,6 +122,34 @@ const AllTickets = () => {
         }
     };
 
+    const handleFieldChange = (e) => {
+        const { name, value } = e.target;
+        setCurrentTicket({
+            ...currentTicket,
+            [name]: value,
+        });
+    };
+
+    const saveTicketDetails = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/ticket/updateTicket/${currentTicket._id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(currentTicket),
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const updatedTicket = await response.json();
+            setTickets(tickets.map(ticket => ticket._id === currentTicket._id ? updatedTicket : ticket));
+            closeModal();
+        } catch (error) {
+            console.error('There was an error updating the ticket details:', error);
+        }
+    };
+
     const filteredTickets = tickets.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
@@ -196,71 +224,71 @@ const AllTickets = () => {
                 </select>
             </div>
             <div className="flex justify-center bg-white text-black">
-    {loading ? (
-        <ClipLoader color="#080f9c" loading={loading} size={50} />
-    ) : (
-        <div className="w-full overflow-x-auto"> {/* Add this container */}
-            <table className="table-auto border-collapse border-2 border-gray-300 text-left w-full"> {/* Add w-full to the table */}
-                <thead>
-                    <tr>
-                        <th className="px-6 py-4 border-b-2 border-gray-300">Ticket Type</th>
-                        <th className="px-6 py-4 border-b-2 border-gray-300">Priority</th>
-                        <th className="px-6 py-4 border-b-2 border-gray-300">Department</th>
-                        <th className="px-6 py-4 border-b-2 border-gray-300">Name</th>
-                        <th className="px-6 py-4 border-b-2 border-gray-300">Role</th>
-                        <th className="px-6 py-4 border-b-2 border-gray-300">Code</th>
-                        <th className="px-6 py-4 border-b-2 border-gray-300">View</th>
-                        <th className="px-6 py-4 border-b-2 border-gray-300">Status</th>
-                        <th className="px-6 py-4 border-b-2 border-gray-300 col-span-2">Comment</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredTickets.map((ticket) => (
-                        <tr key={ticket._id}>
-                            <td className="px-6 py-4 border-b border-gray-300">{ticket.ticketType}</td>
-                            <td className="px-6 py-4 border-b border-gray-300">{ticket.priority}</td>
-                            <td className="px-6 py-4 border-b border-gray-300">{ticket.department}</td>
-                            <td className="px-6 py-4 border-b border-gray-300">{ticket.name}</td>
-                            <td className="px-6 py-4 border-b border-gray-300">{ticket.role}</td>
-                            <td className="px-6 py-4 border-b border-gray-300">{ticket.ticketID}</td>
-                            <td className="px-6 py-4 border-b border-gray-300">
-                                <button className="text-blue-500" onClick={() => openModal(ticket)}>View</button>
-                            </td>
-                            <td className="px-6 py-4 border-b border-gray-300">
-                                <select
-                                    value={ticket.status}
-                                    onChange={(e) => handleStatusChange(ticket._id, e.target.value)}
-                                    className={`border rounded px-2 py-1 ${
-                                        ticket.status === 'Open' ? 'text-green-500' :
-                                        ticket.status === 'In Progress' ? 'text-yellow-500' :
-                                        ticket.status === 'Ready' ? 'text-blue-500' :
-                                        ticket.status === 'Shipped' ? 'text-indigo-500' :
-                                        'text-gray-500'
-                                    }`}
-                                >
-                                    {data.status.map(status => (
-                                        <option key={status.value} value={status.value}>{status.label}</option>
-                                    ))}
-                                </select>
-                            </td>
-                            <td className="px-6 py-4 border-b border-gray-300">
-                                <input
-                                    type="text"
-                                    placeholder="Comment"
-                                    onChange={(e) => updateComment(ticket._id)(e)}
-                                    value={comment[ticket._id] || oldComments[ticket._id] || ''}
-                                />
-                            </td>
-                            <td className="px-6 py-4 border-b border-gray-300">
-                                <button className="text-green-500" onClick={() => newComment(ticket)}>Submit</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    )}
-</div>
+                {loading ? (
+                    <ClipLoader color="#080f9c" loading={loading} size={50} />
+                ) : (
+                    <div className="w-full overflow-x-auto"> {/* Add this container */}
+                        <table className="table-auto border-collapse border-2 border-gray-300 text-left w-full"> {/* Add w-full to the table */}
+                            <thead>
+                                <tr>
+                                    <th className="px-6 py-4 border-b-2 border-gray-300">Ticket Type</th>
+                                    <th className="px-6 py-4 border-b-2 border-gray-300">Priority</th>
+                                    <th className="px-6 py-4 border-b-2 border-gray-300">Department</th>
+                                    <th className="px-6 py-4 border-b-2 border-gray-300">Name</th>
+                                    <th className="px-6 py-4 border-b-2 border-gray-300">Role</th>
+                                    <th className="px-6 py-4 border-b-2 border-gray-300">Code</th>
+                                    <th className="px-6 py-4 border-b-2 border-gray-300">View</th>
+                                    <th className="px-6 py-4 border-b-2 border-gray-300">Status</th>
+                                    <th className="px-6 py-4 border-b-2 border-gray-300 col-span-2">Comment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredTickets.map((ticket) => (
+                                    <tr key={ticket._id}>
+                                        <td className="px-6 py-4 border-b border-gray-300">{ticket.ticketType}</td>
+                                        <td className="px-6 py-4 border-b border-gray-300">{ticket.priority}</td>
+                                        <td className="px-6 py-4 border-b border-gray-300">{ticket.department}</td>
+                                        <td className="px-6 py-4 border-b border-gray-300">{ticket.name}</td>
+                                        <td className="px-6 py-4 border-b border-gray-300">{ticket.role}</td>
+                                        <td className="px-6 py-4 border-b border-gray-300">{ticket.ticketID}</td>
+                                        <td className="px-6 py-4 border-b border-gray-300">
+                                            <button className="text-blue-500" onClick={() => openModal(ticket)}>View</button>
+                                        </td>
+                                        <td className="px-6 py-4 border-b border-gray-300">
+                                            <select
+                                                value={ticket.status}
+                                                onChange={(e) => handleStatusChange(ticket._id, e.target.value)}
+                                                className={`border rounded px-2 py-1 ${
+                                                    ticket.status === 'Open' ? 'text-green-500' :
+                                                    ticket.status === 'In Progress' ? 'text-yellow-500' :
+                                                    ticket.status === 'Ready' ? 'text-blue-500' :
+                                                    ticket.status === 'Shipped' ? 'text-indigo-500' :
+                                                    'text-gray-500'
+                                                }`}
+                                            >
+                                                {data.status.map(status => (
+                                                    <option key={status.value} value={status.value}>{status.label}</option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                        <td className="px-6 py-4 border-b border-gray-300">
+                                            <input
+                                                type="text"
+                                                placeholder="Comment"
+                                                onChange={(e) => updateComment(ticket._id)(e)}
+                                                value={comment[ticket._id] || oldComments[ticket._id] || ''}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 border-b border-gray-300">
+                                            <button className="text-green-500" onClick={() => newComment(ticket)}>Submit</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
 
             <Modal
                 isOpen={modalIsOpen}
@@ -277,36 +305,84 @@ const AllTickets = () => {
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Email</label>
-                                <p>{currentTicket.email}</p>
+                                <input
+                                    type="text"
+                                    name="email"
+                                    value={currentTicket.email}
+                                    onChange={handleFieldChange}
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Name</label>
-                                <p>{currentTicket.name}</p>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={currentTicket.name}
+                                    onChange={handleFieldChange}
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Phone</label>
-                                <p>{currentTicket.phone}</p>
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    value={currentTicket.phone}
+                                    onChange={handleFieldChange}
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Department</label>
-                                <p>{currentTicket.department}</p>
+                                <input
+                                    type="text"
+                                    name="department"
+                                    value={currentTicket.department}
+                                    onChange={handleFieldChange}
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Priority</label>
-                                <p>{currentTicket.priority}</p>
+                                <input
+                                    type="text"
+                                    name="priority"
+                                    value={currentTicket.priority}
+                                    onChange={handleFieldChange}
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Ticket Type</label>
-                                <p>{currentTicket.ticketType}</p>
+                                <input
+                                    type="text"
+                                    name="ticketType"
+                                    value={currentTicket.ticketType}
+                                    onChange={handleFieldChange}
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Role</label>
-                                <p>{currentTicket.role}</p>
+                                <input
+                                    type="text"
+                                    name="role"
+                                    value={currentTicket.role}
+                                    onChange={handleFieldChange}
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                />
                             </div>
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Subject</label>
-                            <p>{currentTicket.subject}</p>
+                            <input
+                                type="text"
+                                name="subject"
+                                value={currentTicket.subject}
+                                onChange={handleFieldChange}
+                                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                            />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Details</label>
@@ -334,6 +410,14 @@ const AllTickets = () => {
                                     </div>
                                 </div>
                             )}
+                        </div>
+                        <div className="mt-4">
+                            <button
+                                onClick={saveTicketDetails}
+                                className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                            >
+                                Save
+                            </button>
                         </div>
                     </div>
                 )}

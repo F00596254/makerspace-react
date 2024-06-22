@@ -175,11 +175,38 @@ const updateTicketStatus= async (req, res) => {
 
         ticket.status = status;
         await ticket.save();
-
+        await mailService.sendMail({
+          from: '',
+          to: ticket.email,
+          subject: 'You Ticket Status has been updated to ' + status,
+          text: `There is an update to your ticket. New Status of your ticket ${ticket.ticketID} is ${status}`,
+        });
         res.json(ticket);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     } 
 }
-module.exports = { submitTicket, upload, getAllTickets, submitComment, getAllComments, getMyTickets, updateTicketStatus  };
+
+const updateTicket = async (req, res) => {
+    const { id } = req.params;
+    const updates = req.body;
+    try {
+        const updatedTicket = await Ticket.findByIdAndUpdate(id, updates, { new: true });
+        if (!updatedTicket) {
+            return res.status(404).send('Ticket not found');
+        }
+        await mailService.sendMail({
+          from: '',
+          to: updatedTicket.email,
+          subject: 'You have a change in your ticket from Admin side ' + updatedTicket.ticketID,
+          text: `There is an update to your ticket. New chanegs are `,
+        });
+        res.json(updatedTicket);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+};
+
+
+module.exports = { submitTicket, upload, getAllTickets, submitComment, getAllComments, getMyTickets, updateTicketStatus, updateTicket  };
