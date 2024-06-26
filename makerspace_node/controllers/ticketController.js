@@ -208,5 +208,27 @@ const updateTicket = async (req, res) => {
     }
 };
 
+const deleteTicket = async (req, res) => {
+    let { id } = req.params;
+    // id = `ObjectId(${id})`
+    try {
+        const ticket = await Ticket.findOne({_id: id});
 
-module.exports = { submitTicket, upload, getAllTickets, submitComment, getAllComments, getMyTickets, updateTicketStatus, updateTicket  };
+        if (!ticket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+        }
+
+        if (ticket.status.toLowerCase() === 'shipped' || ticket.status.toLowerCase() === 'closed') {
+            return res.status(400).json({ message: 'Cannot delete ticket with status shipped or closed' });
+        }
+
+        ticket.status = 'Cencelled';
+        await ticket.save();
+        res.status(200).json({ message: 'Ticket deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+}
+
+
+module.exports = { submitTicket, upload, getAllTickets, submitComment, getAllComments, getMyTickets, updateTicketStatus, updateTicket, deleteTicket  };

@@ -77,6 +77,26 @@ const MyTickets = () => {
         setCurrentPage(page);
     };
 
+    const handleDelete = async (ticketId) => {
+        try {
+            const response = await fetch(`http://localhost:3000/ticket/deleteTicket/${ticketId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            setTickets(tickets.filter(ticket => ticket._id !== ticketId));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const filteredTickets = tickets.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
@@ -151,7 +171,8 @@ const MyTickets = () => {
                                 <th className="w-1/6 py-3">Priority</th>
                                 <th className="w-1/6 py-3">Ticket ID</th>
                                 <th className="w-1/6 py-3">Subject</th>
-                                <th className="w-1/6 py-3">Details</th>
+                                <th className="w-1/6 py-3">Status</th>
+                                <th className="w-1/6 py-3">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -162,8 +183,17 @@ const MyTickets = () => {
                                     <td className="w-1/6 py-4" style={{ color: ticket.priority === "Low" ? "#28a745" : ticket.priority === "Medium" ? "#ffc107" : "#dc3545" }}>{ticket.priority}</td>
                                     <td className="w-1/6 py-4">{ticket.ticketID}</td>
                                     <td className="w-1/6 py-4">{ticket.subject}</td>
-                                    <td className="w-1/6 py-4">                                        <button onClick={() => openModal(ticket)} className="text-blue-500">View</button>
-</td>
+                                    <td className="w-1/6 py-4">{ticket.status}</td>
+                                    <td className="w-1/6 py-4">
+                                        <button onClick={() => openModal(ticket)} className="text-blue-500 mr-4">View</button>
+                                        <button
+                                            onClick={() => handleDelete(ticket._id)}
+                                            disabled={ticket.status === "shipped" || ticket.status === "closed"}
+                                            className="text-red-500"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

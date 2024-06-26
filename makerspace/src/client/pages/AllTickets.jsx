@@ -7,10 +7,9 @@ import data from './../assets/data.json'; // Adjust the import path as necessary
 const AllTickets = () => {
     const [tickets, setTickets] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [chatModalIsOpen, setChatModalIsOpen] = useState(false);
     const [currentTicket, setCurrentTicket] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [comment, setComment] = useState({});
-    const [oldComments, setOldComments] = useState({});
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState({
         priority: '',
@@ -43,25 +42,9 @@ const AllTickets = () => {
             }
         };
 
-        const fetchComments = async () => {
-            try {
-                const response = await fetch('http://localhost:3000/ticket/getAllComments');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                const commentsByTicketId = data.reduce((acc, comment) => {
-                    acc[comment.ticketId] = comment.comment;
-                    return acc;
-                }, {});
-                setOldComments(commentsByTicketId);
-            } catch (error) {
-                console.error('There was an error retrieving the comments:', error);
-            }
-        };
+      
 
         fetchTickets();
-        fetchComments();
     }, [searchTerm, filters]);
 
     const openModal = (ticket) => {
@@ -72,19 +55,19 @@ const AllTickets = () => {
     const closeModal = () => {
         setModalIsOpen(false);
     };
-
-    const updateComment = (id) => (e) => {
-        setComment({ ...comment, [id]: e.target.value });
+    const chatOpenModal = (ticket) => {
+        setCurrentTicket(ticket);
+        setChatModalIsOpen(true);
+    };
+    const chatCloseModal = () => {
+        setChatModalIsOpen(false);
     };
 
-    const newComment = async (currentTicket) => {
-        try {
-            await submitComment(currentTicket._id, comment[currentTicket._id]);
-            setOldComments({ ...oldComments, [currentTicket._id]: comment[currentTicket._id] });
-        } catch (error) {
-            console.error('There was an error submitting the comment:', error);
-        }
-    };
+
+
+    
+
+
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
@@ -271,17 +254,11 @@ const AllTickets = () => {
                                                 ))}
                                             </select>
                                         </td>
-                                        <td className="px-6 py-4 border-b border-gray-300">
-                                            <input
-                                                type="text"
-                                                placeholder="Comment"
-                                                onChange={(e) => updateComment(ticket._id)(e)}
-                                                value={comment[ticket._id] || oldComments[ticket._id] || ''}
-                                            />
+                                        <td className="px-6 py-4 border-b border-gray-300" colSpan={2}>
+                                            <button className="text-blue-500" onClick={() => chatOpenModal(ticket)}>chat</button>
+
                                         </td>
-                                        <td className="px-6 py-4 border-b border-gray-300">
-                                            <button className="text-green-500" onClick={() => newComment(ticket)}>Submit</button>
-                                        </td>
+                                        
                                     </tr>
                                 ))}
                             </tbody>
@@ -422,6 +399,78 @@ const AllTickets = () => {
                     </div>
                 )}
             </Modal>
+
+            <Modal
+    isOpen={chatModalIsOpen}
+    onRequestClose={chatCloseModal}
+    contentLabel="Chat Modal"
+    className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center"
+>
+    <div className="bg-white rounded-lg p-6 w-3/4">
+        <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Chat with Support</h2>
+            <button onClick={chatCloseModal} className="text-red-500">Close</button>
+        </div>
+        
+        {/* Chat Messages Display */}
+        <div className="space-y-4">
+            {/* User Sent Message */}
+            <div className="flex justify-end">
+                <div className="bg-blue-500 text-white rounded-lg p-2 max-w-2/3">
+                    <p className="text-sm">Hello, I have a question about my order.</p>
+                </div>
+            </div>
+
+            {/* Support Sent Message */}
+            <div className="flex justify-start">
+                <div className="bg-gray-200 rounded-lg p-2 max-w-2/3">
+                    <p className="text-sm">Sure! What can I assist you with?</p>
+                </div>
+            </div>
+
+            {/* User Sent Message with Attachment */}
+            <div className="flex justify-end">
+                <div className="bg-blue-500 text-white rounded-lg p-2 max-w-2/3">
+                    <p className="text-sm">Here's the screenshot of the issue.</p>
+                    <a
+                        href="http://localhost:3000/uploads/screenshot.png"
+                        download
+                        className="text-white hover:underline block mt-1"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Download Attachment
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {/* Input Box for Sending Message */}
+        <div className="flex mt-4">
+            <textarea
+                className="border-gray-300 rounded-md shadow-sm p-2 flex-1 resize-none"
+                placeholder="Type your message..."
+                // value={newMessage}
+                // onChange={(e) => setNewMessage(e.target.value)}
+            ></textarea>
+            <label className="ml-2 flex items-center">
+                <input
+                    type="file"
+                    // onChange={handleFileUpload}
+                    className="hidden"
+                />
+                <button
+                    // onClick={sendMessage}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md ml-2"
+                >
+                    Send
+                </button>
+            </label>
+        </div>
+    </div>
+</Modal>
+
+
 
             {/* Pagination */}
             <div className="flex justify-center mt-4">
