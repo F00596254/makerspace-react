@@ -5,6 +5,7 @@ const Ticket = require('../models/tickets');
 const Comment = require('../models/ticketComment');
 const mailService = require('../service/mailService');
 const shortid = require('shortid');
+const { User, isSimilarPassword, forgotPasswordS } = require('../models/userModel');
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, path.join(__dirname, '..', 'uploads'));
@@ -98,10 +99,25 @@ const getAllTickets = async (req, res) => {
 
 const submitComment = async (req, res) => {
   try{
-    const {id, comment} = req.body;
+    
+    const ticket = await Ticket.findById(req.body.ticketID);
+    if(!ticket){
+      throw new Error('Some Backend Error 1 ');
+    }
+    email=ticket.email;
+    const user =  await User.findOne({email});
+    if(!user){
+      throw new Error('Some Backend Error 2');
+    }
+    userId=user._id;
+    const {ticketID,message,from} = req.body;
     const ticketComment = new Comment({ 
-      ticketId:id,
-      comment
+      ticketId:ticketID,
+      comment:message,
+      from,
+      userId
+
+
     });
     await ticketComment.save();
     res.status(200).json({message: 'Comment submitted successfully'});
@@ -114,7 +130,7 @@ const submitComment = async (req, res) => {
 const getAllComments = async (req, res) => {
   try {
     const { ticketId } = req.query;
-    const comments = ticketId ? await Comment.find({ ticketId }) : await Comment.find();
+    const comments = await Comment.find({ ticketId }).sort({ createdAt: 1 });
     res.status(200).json(comments);
   } catch (error) {
     res.status(500).json({ message: 'Failed to retrieve comments', error: error.message });

@@ -10,7 +10,9 @@ const AllTickets = () => {
     const [chatModalIsOpen, setChatModalIsOpen] = useState(false);
     const [currentTicket, setCurrentTicket] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [newMessage, setNewMessage] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [fetchComment, setFetchComment] = useState([{}]);
     const [filters, setFilters] = useState({
         priority: '',
         department: '',
@@ -47,6 +49,23 @@ const AllTickets = () => {
         fetchTickets();
     }, [searchTerm, filters]);
 
+    const getComment = async (ticket) => {
+        setLoading(true);
+            try {
+                const response = await fetch(`http://localhost:3000/ticket/getAllComments?ticketId=${ticket._id}`,{
+                    method: 'GET',
+                })
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setFetchComment(data);
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
+        };
     const openModal = (ticket) => {
         setCurrentTicket(ticket);
         setModalIsOpen(true);
@@ -57,6 +76,7 @@ const AllTickets = () => {
     };
     const chatOpenModal = (ticket) => {
         setCurrentTicket(ticket);
+        getComment(ticket);
         setChatModalIsOpen(true);
     };
     const chatCloseModal = () => {
@@ -137,7 +157,16 @@ const AllTickets = () => {
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
+    const sendMessage = () => {
+        // Send the message to the server
+        const data = {
+            ticketID: currentTicket._id,
+            message: newMessage,
+            from: 'admin',
 
+        }
+        submitComment(data);
+    }
     const totalPages = Math.ceil(tickets.length / itemsPerPage);
 
     return (
@@ -414,35 +443,21 @@ const AllTickets = () => {
         
         {/* Chat Messages Display */}
         <div className="space-y-4">
-            {/* User Sent Message */}
-            <div className="flex justify-end">
-                <div className="bg-blue-500 text-white rounded-lg p-2 max-w-2/3">
-                    <p className="text-sm">Hello, I have a question about my order.</p>
-                </div>
+           {loading ? <ClipLoader color="#080f9c" loading={loading} size={50} /> :   
+           (fetchComment.map((comment) => (
+            comment.from === 'admin' ? (<div className="flex justify-end">
+            <div className="bg-blue-500 text-white rounded-lg p-2 max-w-2/3">
+                <p className="text-sm">{comment.comment}</p>
             </div>
-
-            {/* Support Sent Message */}
-            <div className="flex justify-start">
+        </div>):(<div className="flex justify-start">
                 <div className="bg-gray-200 rounded-lg p-2 max-w-2/3">
-                    <p className="text-sm">Sure! What can I assist you with?</p>
+                    <p className="text-sm">{comment.comment}</p>
                 </div>
-            </div>
+            </div>)
+           ))
+            )}
 
-            {/* User Sent Message with Attachment */}
-            <div className="flex justify-end">
-                <div className="bg-blue-500 text-white rounded-lg p-2 max-w-2/3">
-                    <p className="text-sm">Here's the screenshot of the issue.</p>
-                    <a
-                        href="http://localhost:3000/uploads/screenshot.png"
-                        download
-                        className="text-white hover:underline block mt-1"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Download Attachment
-                    </a>
-                </div>
-            </div>
+          
         </div>
 
         {/* Input Box for Sending Message */}
@@ -450,17 +465,17 @@ const AllTickets = () => {
             <textarea
                 className="border-gray-300 rounded-md shadow-sm p-2 flex-1 resize-none"
                 placeholder="Type your message..."
-                // value={newMessage}
-                // onChange={(e) => setNewMessage(e.target.value)}
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
             ></textarea>
             <label className="ml-2 flex items-center">
                 <input
                     type="file"
                     // onChange={handleFileUpload}
-                    className="hidden"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                 />
                 <button
-                    // onClick={sendMessage}
+                    onClick={sendMessage}
                     className="bg-blue-500 text-white px-4 py-2 rounded-md ml-2"
                 >
                     Send
