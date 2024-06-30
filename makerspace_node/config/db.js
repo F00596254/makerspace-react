@@ -4,7 +4,7 @@ require('dotenv').config();
 //mongodb+srv://ganeshkrishnagoud:Manga22%40!@cluster0.6yuwlzk.mongodb.net/Makerspace
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.URI, {
+        const conn = await mongoose.connect('mongodb://127.0.0.1:27017/Makerspace', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });

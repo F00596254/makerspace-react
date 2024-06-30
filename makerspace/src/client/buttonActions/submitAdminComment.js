@@ -1,11 +1,11 @@
-export async function submitComment(id,comment){
+export async function submitComment(data){
     try {
         const response = await fetch('http://localhost:3000/ticket/submitComment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ id, comment }),
+          body: JSON.stringify(data),
         });
     
         if (!response.ok) {
