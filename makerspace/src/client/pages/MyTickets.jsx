@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import data from './../assets/data.json'; 
 import Modal from 'react-modal';
+import { submitComment } from '../buttonActions/submitAdminComment';
 
 const MyTickets = () => {
     const token = sessionStorage.getItem('token');
@@ -9,6 +10,9 @@ const MyTickets = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [chatModalIsOpen, setChatModalIsOpen] = useState(false);
+    const [fetchComment, setFetchComment] = useState([{}]);
+    const [newMessage, setNewMessage] = useState('');
     const [filters, setFilters] = useState({
         priority: '',
         department: '',
@@ -28,6 +32,16 @@ const MyTickets = () => {
         setModalIsOpen(false);
     };
 
+    const sendMessage = () => {
+        // Send the message to the server
+        const data = {
+            ticketID: currentTicket._id,
+            message: newMessage,
+            from: 'user',
+
+        }
+        submitComment(data);
+    }
     useEffect(() => {
         const fetchTickets = async () => {
             try {
@@ -96,7 +110,32 @@ const MyTickets = () => {
             console.error(error);
         }
     };
+    const getComment = async (ticket) => {
+        setLoading(true);
+            try {
+                const response = await fetch(`http://localhost:3000/ticket/getAllComments?ticketId=${ticket._id}`,{
+                    method: 'GET',
+                })
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setFetchComment(data);
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
+        const chatCloseModal = () => {
+            setChatModalIsOpen(false);
+        };
+        const chatOpenModal = (ticket) => {
+            setCurrentTicket(ticket);
+            getComment(ticket);
+            setChatModalIsOpen(true);
+        };
     const filteredTickets = tickets.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
@@ -173,6 +212,8 @@ const MyTickets = () => {
                                 <th className="w-1/6 py-3">Subject</th>
                                 <th className="w-1/6 py-3">Status</th>
                                 <th className="w-1/6 py-3">Actions</th>
+                                <th className="px-6 py-4 border-b-2 border-gray-300 col-span-2">Comment</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -194,6 +235,10 @@ const MyTickets = () => {
                                             Delete
                                         </button>
                                     </td>
+                                    <td className="px-6 py-4 border-b border-gray-300" colSpan={2}>
+                                            <button className="text-blue-500" onClick={() => chatOpenModal(ticket)}>chat</button>
+
+                                        </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -293,6 +338,61 @@ const MyTickets = () => {
                     </div>
                 )}
             </Modal>
+            <Modal
+    isOpen={chatModalIsOpen}
+    onRequestClose={chatCloseModal}
+    contentLabel="Chat Modal"
+    className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center"
+>
+    <div className="bg-white rounded-lg p-6 w-3/4">
+        <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Chat with Support</h2>
+            <button onClick={chatCloseModal} className="text-red-500">Close</button>
+        </div>
+        
+        {/* Chat Messages Display */}
+        <div className="space-y-4">
+           {loading ? <ClipLoader color="#080f9c" loading={loading} size={50} /> :   
+           (fetchComment.map((comment,key) => (
+            comment.from === 'user' ? (<div className="flex justify-end" key={key}>
+            <div className="bg-blue-500 text-white rounded-lg p-2 max-w-2/3">
+                <p className="text-sm">{comment.comment}</p>
+            </div>
+        </div>):(<div className="flex justify-start" key={key}>
+                <div className="bg-gray-200 rounded-lg p-2 max-w-2/3">
+                    <p className="text-sm">{comment.comment}</p>
+                </div>
+            </div>)
+           ))
+            )}
+
+          
+        </div>
+
+        {/* Input Box for Sending Message */}
+        <div className="flex mt-4">
+            <textarea
+                className="border-gray-300 rounded-md shadow-sm p-2 flex-1 resize-none"
+                placeholder="Type your message..."
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+            ></textarea>
+            <label className="ml-2 flex items-center">
+                <input
+                    type="file"
+                    // onChange={handleFileUpload}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                />
+                <button
+                    onClick={sendMessage}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md ml-2"
+                >
+                    Send
+                </button>
+            </label>
+        </div>
+    </div>
+</Modal>
         </div>
     );
 };
