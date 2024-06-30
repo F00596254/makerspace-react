@@ -444,12 +444,12 @@ const AllTickets = () => {
         {/* Chat Messages Display */}
         <div className="space-y-4">
            {loading ? <ClipLoader color="#080f9c" loading={loading} size={50} /> :   
-           (fetchComment.map((comment) => (
-            comment.from === 'admin' ? (<div className="flex justify-end">
+           (fetchComment.map((comment,key) => (
+            comment.from === 'admin' ? (<div className="flex justify-end" key={key}>
             <div className="bg-blue-500 text-white rounded-lg p-2 max-w-2/3">
                 <p className="text-sm">{comment.comment}</p>
             </div>
-        </div>):(<div className="flex justify-start">
+        </div>):(<div className="flex justify-start" key={key}>
                 <div className="bg-gray-200 rounded-lg p-2 max-w-2/3">
                     <p className="text-sm">{comment.comment}</p>
                 </div>

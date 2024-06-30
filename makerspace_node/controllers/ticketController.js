@@ -109,14 +109,22 @@ const submitComment = async (req, res) => {
     if(!user){
       throw new Error('Some Backend Error 2');
     }
+    const parentTicket = await Comment.findOne({
+      ticketId: req.body.ticketID,
+      userId: user._id,
+    }).sort({ createdAt: -1 });
+    let parentCommentId=null;
+    if(parentTicket){
+      parentCommentId=parentTicket._id;
+    }
     userId=user._id;
     const {ticketID,message,from} = req.body;
     const ticketComment = new Comment({ 
       ticketId:ticketID,
       comment:message,
       from,
-      userId
-
+      userId,
+      parentCommentId
 
     });
     await ticketComment.save();
