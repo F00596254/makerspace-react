@@ -99,12 +99,12 @@ const getAllTickets = async (req, res) => {
 
 const submitComment = async (req, res) => {
   try{
-    
     const ticket = await Ticket.findById(req.body.ticketID);
     if(!ticket){
       throw new Error('Some Backend Error 1 ');
     }
     email=ticket.email;
+    tickedCode = ticket.ticketID;
     const user =  await User.findOne({email});
     if(!user){
       throw new Error('Some Backend Error 2');
@@ -119,6 +119,13 @@ const submitComment = async (req, res) => {
     }
     userId=user._id;
     const {ticketID,message,from} = req.body;
+    if(from==='admin'){
+      await mailService.sendMail({
+        from: '',
+        to: email,
+        subject: 'You have a new comment on your ticket ' + tickedCode + ' from Admin',
+        text: `There is a new comment on your ticket. Please login to view the comment`,
+      })}
     const ticketComment = new Comment({ 
       ticketId:ticketID,
       comment:message,
