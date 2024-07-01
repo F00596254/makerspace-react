@@ -13,7 +13,7 @@ const Privilege = require("../models/privilege");
 
 exports.signup = async (req, res) => {
   try {
-    const defaultRole = await Role.findOne({ role_name: 'Admin' });
+    const defaultRole = await Role.findOne({ role_name: 'User' });
     if (!defaultRole) {
       return res.status(500).json({
         success: false,
