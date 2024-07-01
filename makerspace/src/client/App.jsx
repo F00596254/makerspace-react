@@ -13,6 +13,10 @@ import { RecoilRoot } from 'recoil';
 import AccountDetails from './pages/AccountDetails';
 import ForgotPassword from './pages/ForgotPassword';
 import EnterYourEmail from './pages/EnterEmail';
+import AddPrivilege from './pages/AddPrivilege';
+import ViewPrivilege from './pages/ViewPrivilege';
+import LinkRolePrivilege from './pages/LinkRolePrivilege'; 
+import Sidebar from './components/SideBar';
 
 import Tickets from './pages/Tickets';
 import AllTickets from './pages/AllTickets';
@@ -24,6 +28,7 @@ function App() {
       
           <RecoilRoot>
         <NavigationBar />
+        <Sidebar />
         <Routes>
           <Route path='/signup' element={<Signup/>}></Route>
           <Route path='/signin' element={<Signin/>}></Route>
@@ -38,7 +43,10 @@ function App() {
           <Route path='/tickets' element={<Tickets/>}></Route>
           <Route path='/MyTickets' element={<MyTickets/>}></Route>
           <Route path='/allTickets' element={<AllTickets/>}></Route>
-        
+          <Route path='/add-privilege' element={<AddPrivilege />} />
+          <Route path='/view-privilege' element={<ViewPrivilege />} />
+          <Route path='/link-role-privilege' element={<LinkRolePrivilege />} /> 
+
         </Routes>
         <Footer />
           </RecoilRoot>

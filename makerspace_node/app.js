@@ -6,6 +6,10 @@ const cors=require('cors')
 const emailRoutes = require('./routes/emailRoutes.js')
 const ticketRoutes = require('./routes/ticketRoutes.js');
 const path = require('path');
+const privilegeRoutes = require('./routes/privilegeRoutes');
+const roleRoutes = require('./routes/roleRoutes');
+
+// const key= require("./config/secret.js");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 require('dotenv').config();
@@ -54,11 +58,13 @@ app.use(
 // Routes
 app.use("/api", userRoutes);
 app.use("/mail", emailRoutes);
-app.use('/ticket', ticketRoutes); 
-
+app.use('/ticket', ticketRoutes);
 app.get('/uploads/:filename', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'uploads', req.params.filename));
   });
+app.use('/privilege', privilegeRoutes);
+app.use('/role', roleRoutes);
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;
