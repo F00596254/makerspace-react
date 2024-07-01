@@ -19,7 +19,7 @@ const ViewPrivilege = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/privileges/${id}`);
+      await axios.delete(`http://localhost:3000/privilege/${id}`);
       fetchPrivileges(); // Refresh the list after deletion
     } catch (error) {
       console.error('An error occurred while deleting the privilege:', error);

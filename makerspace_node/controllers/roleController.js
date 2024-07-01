@@ -85,9 +85,22 @@ const getRoleById = async (req, res) => {
   }
 };
 
+const deleteRole = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Role.findByIdAndDelete(id);
+    await RolePrivilege.deleteMany({ role_id: id });
+    res.status(200).json({ msg: 'Role deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'An error occurred while deleting the role' });
+  }
+};
+
 module.exports = {
   createRole,
   updateRolePrivileges,
   getAllRoles,
-  getRoleById
+  getRoleById,
+  deleteRole
 };

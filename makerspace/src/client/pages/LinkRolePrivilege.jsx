@@ -2,13 +2,24 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const LinkRolePrivilege = () => {
-  const [roleName, setRoleName] = useState('');
+  const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState('');
   const [privileges, setPrivileges] = useState([]);
   const [selectedPrivileges, setSelectedPrivileges] = useState([]);
 
   useEffect(() => {
+    fetchRoles();
     fetchPrivileges();
   }, []);
+
+  const fetchRoles = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/role/roles');
+      setRoles(response.data.roles);
+    } catch (error) {
+      console.error('An error occurred while fetching roles:', error);
+    }
+  };
 
   const fetchPrivileges = async () => {
     try {
@@ -33,16 +44,15 @@ const LinkRolePrivilege = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/role/roles', {
-        role_name: roleName,
-        privilege_ids: selectedPrivileges
+      const response = await axios.put(`http://localhost:3000/role/roles/${selectedRole}`, {
+        privilege_ids: selectedPrivileges,
       });
-      console.log('Role created successfully:', response.data);
+      console.log('Role updated successfully:', response.data);
       // Reset form
-      setRoleName('');
+      setSelectedRole('');
       setSelectedPrivileges([]);
     } catch (error) {
-      console.error('An error occurred while creating the role:', error);
+      console.error('An error occurred while updating the role:', error);
     }
   };
 
@@ -51,16 +61,22 @@ const LinkRolePrivilege = () => {
       <h2 className="text-2xl mb-4">Link Role to Privileges</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roleName">
-            Role Name
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roles">
+            Roles
           </label>
-          <input
-            type="text"
-            id="roleName"
-            value={roleName}
-            onChange={(e) => setRoleName(e.target.value)}
+          <select
+            id="roles"
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
+          >
+            <option value="">Select a role</option>
+            {roles.map((role) => (
+              <option key={role._id} value={role._id}>
+                {role.role_name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="privileges">
@@ -84,7 +100,7 @@ const LinkRolePrivilege = () => {
           type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
-          Create Role
+          Link Privileges
         </button>
       </form>
     </div>
