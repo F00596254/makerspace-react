@@ -1,5 +1,8 @@
-const User = require('../models/user');
 const jwt = require('jsonwebtoken');
+const User = require('../models/userModel');
+const Role = require('../models/role');
+const RolePrivilege = require('../models/rolePrivilege');
+const Privilege = require('../models/privilege');
 const key = require('../config/secret');
 
 async function checkPrivilege(requiredPrivilege) {

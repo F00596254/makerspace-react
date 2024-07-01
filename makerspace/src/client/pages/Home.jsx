@@ -4,12 +4,15 @@ import Features from "../components/Features";
 import Mission from "../components/Mission";
 import Testimonials from "../components/Testimonals";
 import Title from "../components/Title";
+import Sidebar from "../components/SideBar";
 export default function Home() {
   const isAdmin = useSelector((state) => state.admin.isAdmin);
   return (
     <>
       {isAdmin ? (
+        <>
         <AdminDashboard />
+        </>
       ) : (
         <>
           <Testimonials />

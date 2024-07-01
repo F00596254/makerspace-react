@@ -21,6 +21,7 @@ export async function LogginIn(email, password, setIsLoggedInS, navigate, setWar
             const isAdmin = data.isAdmin || false;
             localStorage.setItem('token', data.token);  // Use data.token to store token in localStorage
             sessionStorage.setItem('token', data.token);
+            localStorage.setItem('isAdmin', isAdmin);
             dispatch(setIsAdmin(isAdmin));
             alert('You have successfully logged in');
             navigate('/home');
