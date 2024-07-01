@@ -6,7 +6,7 @@ const key = require("../config/secret");
 
 exports.signup = async (req, res) => {
   try {
-    const defaultRole = await Role.findOne({ role_name: 'User' });
+    const defaultRole = await Role.findOne({ role_name: 'Admin' });
     if (!defaultRole) {
       return res.status(500).json({
         success: false,

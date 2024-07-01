@@ -3,6 +3,9 @@ const bodyParser = require("body-parser");
 const connectDB = require("./config/db.js");
 const userRoutes = require("./routes/userRoutes.js");
 const emailRoutes = require("./routes/emailRoutes.js");
+const privilegeRoutes = require('./routes/privilegeRoutes');
+const roleRoutes = require('./routes/roleRoutes');
+
 const cors = require("cors");
 // const key= require("./config/secret.js");
 const session = require("express-session");
@@ -51,6 +54,9 @@ app.use(
 // Routes
 app.use("/api", userRoutes);
 app.use("/mail", emailRoutes);
+app.use('/privilege', privilegeRoutes);
+app.use('/role', roleRoutes);
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;
