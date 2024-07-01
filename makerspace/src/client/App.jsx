@@ -23,6 +23,8 @@ import Tickets from './pages/Tickets';
 import AllTickets from './pages/AllTickets';
 import MyTickets from './pages/MyTickets';
 import { setIsAdmin } from './store/actions';
+import ViewRoles from './pages/ViewRoles';
+import AddRole from './pages/AddRole';
 
 function App() {
   const dispatch = useDispatch();
@@ -57,6 +59,8 @@ function App() {
             <Route path='/allTickets' element={<AllTickets/>}></Route>
             <Route path='/add-privilege' element={<AddPrivilege />} />
             <Route path='/view-privilege' element={<ViewPrivilege />} />
+            <Route path="/add-role" element={<AddRole />} />
+            <Route path='/view-roles' element={<ViewRoles />} />
             <Route path='/link-role-privilege' element={<LinkRolePrivilege />} /> 
 
           </Routes>

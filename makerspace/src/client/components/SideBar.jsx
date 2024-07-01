@@ -7,7 +7,8 @@ const Sidebar = () => {
     { title: "Add Privilege", src: "AddPrivilege", path: "/add-privilege" },
     { title: "View Privileges", src: "ViewPrivilege", path: "/view-privilege" },
     { title: "Link Role to Privilege", src: "LinkRolePrivilege", gap: true, path: "/link-role-privilege" },
-    { title: "View Roles", src: "ViewRoles", path: "/view-roles" }
+    { title: "View Roles", src: "ViewRoles", path: "/view-roles" },
+    { title: "Add Role", src: "AddRole", path: "/add-role" }
   ];
   return (
     <div className="flex">
